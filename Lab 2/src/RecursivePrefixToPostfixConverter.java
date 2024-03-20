@@ -9,7 +9,7 @@ import java.util.Scanner;
  * prefix form and prints errors if encountered.  The program also tracks and prints
  * the number of prefix expressions entered.
  * 
- * @version 1.0 / 26 Feb 2024
+ * @version 1.0 / 19 Mar 2024
  * @author David Blossom
  * 
  */
