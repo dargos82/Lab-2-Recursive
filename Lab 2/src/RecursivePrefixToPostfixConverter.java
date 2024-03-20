@@ -49,37 +49,39 @@ public class RecursivePrefixToPostfixConverter {
 		
 		char newChar = ' ';
 		
-		sc.useDelimiter("");
-		
-		if (sc.hasNext()) {
-			newChar = sc.next().charAt(0);
-		}
+		newChar = sc.useDelimiter("").next().charAt(0);
 		
 		return newChar;
 		
-	}
+	} //end getInput
 	
 	public static String convert(Scanner sc) {
 		
 		char input = getInput(sc);
 		
-		System.out.println("input: " + input); //test
+		if (!(input == '\n')) {
 		
-		String op;
-		String op1;
-		String op2;
-		String result = "";
-		
-		if(!isOperator(input))
-			return result = "test: " + input;
-		
-		else {
-			op = "" + input;
-			op1 = convert(sc);
-			op2 = convert(sc);
+			//System.out.println("input: " + input); //test
 			
-			return result = op1 + op2 + op;
+			String op;
+			String op1;
+			String op2;
+			String result;
+			
+			if(!isOperator(input))
+				return result = "" + input;
+			
+			else {
+				op = "" + input;
+				op1 = convert(sc);
+				op2 = convert(sc);
+				
+				return result = op1 + op2 + op;
+			}
 		}
+		
+		else
+			return "";
 		
 	} //end convert
 	
