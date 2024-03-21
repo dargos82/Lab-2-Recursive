@@ -1,6 +1,10 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /** RecursivePrefixtoPostfixConverter converts a provided prefix expression to the corresponding
@@ -30,22 +34,54 @@ public class RecursivePrefixToPostfixConverter {
 
 	} //end main
 	
-	public void processFiles(String inputFile, String outputFile) throws FileNotFoundException {
+	public void processFiles(String inputFileName, String outputFileName) throws FileNotFoundException {
 		
-		FileReader fileIn = new FileReader(inputFile);
-		Scanner scanner =  new Scanner(fileIn);
+		//create File object for input
+		File fileIn = new File(inputFileName);
 		
-		while (scanner.hasNextLine()) {
+		//create File object for output
+		File fileOut = new File(outputFileName);
 		
-			System.out.println(convert(scanner));
+		//initialize input and output String variables
+		String newInput = null;
+		String outputStr = null;
 		
+		//verify input file exists; provide error if not found
+		if (!fileIn.exists())
+			System.out.println("Error: Input file not found.");
+		
+		else
+			try {
+		
+			BufferedReader reader = new BufferedReader( new FileReader(fileIn) );
+			Scanner scanner =  new Scanner(fileIn);
+			
+			PrintWriter writer = new PrintWriter(new FileWriter( fileOut ));
+			
+			//print header information to output file
+			writer.printf( "%-30s %-30s \n\n", "Input Expression", "Output Expression");
+			
+			while (scanner.hasNextLine()) {
+			//while ((newInput = reader.readLine()) != null) {
+				
+				outputStr = convert(scanner);
+				writer.printf( "%-30s %-30s \n", "prefix string", outputStr);
+				//System.out.println(convert(scanner));
+			
+			}
+			
+			writer.close();
+			scanner.close();
+			reader.close();
+		
+		  //Print error if unable to read or write to files
+			} catch (IOException e) {
+				System.out.println( "Error: Unable to read or write to file" );
 		}
-		
-		scanner.close();
 		
 	} //end processFiles
 	
-	public static char getInput(Scanner sc) {
+	public char getInput(Scanner sc) {
 		
 		char newChar = ' ';
 		
@@ -55,11 +91,20 @@ public class RecursivePrefixToPostfixConverter {
 		
 	} //end getInput
 	
-	public static String convert(Scanner sc) {
+	public String convert(Scanner sc) {
 		
 		char input = getInput(sc);
 		
-		if (!(input == '\n')) {
+		if (!isOperand(input) && !isOperator(input))
+			return error = "Invalid prefix input";
+		
+		else if (input == ' ')
+			return error = "Invalid prefix input";
+		
+		else if (input == '\n')
+			return "test";
+		
+		else {
 		
 			//System.out.println("input: " + input); //test
 			
@@ -80,9 +125,6 @@ public class RecursivePrefixToPostfixConverter {
 			}
 		}
 		
-		else
-			return "";
-		
 	} //end convert
 	
 	private static boolean isOperator(char c) {
@@ -101,4 +143,6 @@ public class RecursivePrefixToPostfixConverter {
 			return false;
 	} //end isOperand
 
+	private String error;
+	
 } //end RecursivePrefixToPostfixConverter
