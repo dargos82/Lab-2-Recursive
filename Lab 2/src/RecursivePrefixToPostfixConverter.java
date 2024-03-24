@@ -53,8 +53,8 @@ public class RecursivePrefixToPostfixConverter {
 		else
 			try {
 		
-			BufferedReader reader = new BufferedReader( new FileReader(fileIn) );
-			Scanner scanner =  new Scanner(fileIn);
+			BufferedReader reader = new BufferedReader( new FileReader( fileIn ) );
+			Scanner scanner =  new Scanner( fileIn );
 			
 			PrintWriter writer = new PrintWriter(new FileWriter( fileOut ));
 			
@@ -65,16 +65,30 @@ public class RecursivePrefixToPostfixConverter {
 			//while ((newInput = reader.readLine()) != null) {
 				
 				outputStr = convert(scanner);
-				writer.printf( "%-30s %-30s \n", "prefix string", outputStr);
-				//System.out.println(convert(scanner));
-			
+				
+				while (scanner.hasNext()) {
+					
+					char test = getInput(scanner);
+					
+					if (test == '\n')
+						writer.printf( "%-30s %-30s \n", "prefix string", outputStr );
+					
+					else
+						writer.printf( "%-30s %-30s \n", "prefix string", "Invalid prefix input" );
+				}
+				
+				//if (!(outputStr == ""))
+				//	writer.printf( "%-30s %-30s \n", "prefix string", outputStr );
+				
+				//else if(scanner.hasNext())
+				//	writer.printf( "%-30s %-30s \n", "prefix string", "Invalid prefix input" );
 			}
 			
 			writer.close();
 			scanner.close();
 			reader.close();
 		
-		  //Print error if unable to read or write to files
+		  //print error if unable to read or write to files
 			} catch (IOException e) {
 				System.out.println( "Error: Unable to read or write to file" );
 		}
@@ -95,18 +109,21 @@ public class RecursivePrefixToPostfixConverter {
 		
 		char input = getInput(sc);
 		
-		if (!isOperand(input) && !isOperator(input))
+		if (input == '\n')
+			return "";
+		
+		else if (!isOperand(input) && !isOperator(input))
 			return error = "Invalid prefix input";
 		
 		else if (input == ' ')
 			return error = "Invalid prefix input";
 		
-		else if (input == '\n')
-			return "test";
-		
 		else {
 		
-			//System.out.println("input: " + input); //test
+			if (error != "")
+				return error;
+			
+			else {
 			
 			String op;
 			String op1;
@@ -122,6 +139,7 @@ public class RecursivePrefixToPostfixConverter {
 				op2 = convert(sc);
 				
 				return result = op1 + op2 + op;
+			}
 			}
 		}
 		
@@ -143,6 +161,6 @@ public class RecursivePrefixToPostfixConverter {
 			return false;
 	} //end isOperand
 
-	private String error;
+	private String error = "";
 	
 } //end RecursivePrefixToPostfixConverter
