@@ -45,6 +45,10 @@ public class RecursivePrefixToPostfixConverter {
 		//initialize input and output String variables
 		String newInput = null;
 		String outputStr = null;
+		char test = ' ';
+		
+		//initialize counter for tracking the number of input expressions
+		int counter = 0; 
 		
 		//verify input file exists; provide error if not found
 		if (!fileIn.exists())
@@ -55,34 +59,55 @@ public class RecursivePrefixToPostfixConverter {
 		
 			BufferedReader reader = new BufferedReader( new FileReader( fileIn ) );
 			Scanner scanner =  new Scanner( fileIn );
+			PrintWriter writer = new PrintWriter(new FileWriter( fileOut, true ));
 			
-			PrintWriter writer = new PrintWriter(new FileWriter( fileOut ));
 			
 			//print header information to output file
-			writer.printf( "%-30s %-30s \n\n", "Input Expression", "Output Expression");
+			writer.printf( "%-30s\n", "Input Expressions");
+			writer.printf( "%-30s\n\n", "------------------------------");
 			
-			while (scanner.hasNextLine()) {
-			//while ((newInput = reader.readLine()) != null) {
+			//get prefix inputs; print to output file
+			while ((newInput = reader.readLine()) != null) {
 				
+				writer.printf( "%-30s\n", newInput );
+				counter++;
+				
+			}
+			
+			//print divider information to output file
+			writer.printf( "\n\n%-30s\n", "Converted Expressions");
+			writer.printf( "%-30s\n\n", "------------------------------");
+			
+			//process conversions from prefix to postfix; print to output file
+			while (scanner.hasNextLine()) {				
+
 				outputStr = convert(scanner);
 				
-				while (scanner.hasNext()) {
+				if (scanner.hasNext()) {
+										
+					test = scanner.next().charAt(0);
+								
+					if (isOperand(test))
+						writer.printf( "%-30s\n", "Invalid prefix input; too many operands" );
 					
-					char test = getInput(scanner);
+					//if (isOperand(test) || isOperator(test))
+					else if (isOperator(test))
+						writer.printf( "%-30s\n", "Invalid prefix input; too many operators" );
 					
-					if (test == '\n')
-						writer.printf( "%-30s %-30s \n", "prefix string", outputStr );
-					
-					else
-						writer.printf( "%-30s %-30s \n", "prefix string", "Invalid prefix input" );
-				}
-				
-				//if (!(outputStr == ""))
-				//	writer.printf( "%-30s %-30s \n", "prefix string", outputStr );
-				
-				//else if(scanner.hasNext())
-				//	writer.printf( "%-30s %-30s \n", "prefix string", "Invalid prefix input" );
-			}
+					else 
+						writer.printf( "%-30s\n", outputStr );
+
+				} //end if
+												
+				//flush remaining characters until newline
+				while (test != '\n')
+					test = scanner.next().charAt(0);
+
+			} //end while
+			
+			writer.printf( "%-30s\n", outputStr );
+			
+			writer.print("\n\n\nExpressions evaluated: " + counter);
 			
 			writer.close();
 			scanner.close();
@@ -95,41 +120,30 @@ public class RecursivePrefixToPostfixConverter {
 		
 	} //end processFiles
 	
+	//get new character from file; uses recursion
 	public char getInput(Scanner sc) {
 		
 		char newChar = ' ';
 		
 		newChar = sc.useDelimiter("").next().charAt(0);
-		
+
 		return newChar;
 		
 	} //end getInput
 	
+	//convert the prefix input to postfix using recursion
 	public String convert(Scanner sc) {
 		
-		char input = getInput(sc);
+		String op;
+		String op1;
+		String op2;
+		String result;
 		
-		if (input == '\n')
-			return "";
+		char input = getInput(sc); //read in next character
 		
-		else if (!isOperand(input) && !isOperator(input))
-			return error = "Invalid prefix input";
+		if (!isOperand(input) && !isOperator(input))
+			error = "error";
 		
-		else if (input == ' ')
-			return error = "Invalid prefix input";
-		
-		else {
-		
-			if (error != "")
-				return error;
-			
-			else {
-			
-			String op;
-			String op1;
-			String op2;
-			String result;
-			
 			if(!isOperator(input))
 				return result = "" + input;
 			
@@ -138,11 +152,15 @@ public class RecursivePrefixToPostfixConverter {
 				op1 = convert(sc);
 				op2 = convert(sc);
 				
-				return result = op1 + op2 + op;
+				result = op1 + op2 + op;
 			}
-			}
-		}
-		
+			
+			if (error != "")
+				return error;
+			
+			else
+				return result;
+				
 	} //end convert
 	
 	private static boolean isOperator(char c) {
@@ -161,6 +179,6 @@ public class RecursivePrefixToPostfixConverter {
 			return false;
 	} //end isOperand
 
-	private String error = "";
+	private String error;
 	
 } //end RecursivePrefixToPostfixConverter
