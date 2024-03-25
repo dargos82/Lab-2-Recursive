@@ -13,13 +13,18 @@ import java.util.Scanner;
  * prefix form and prints errors if encountered.  The program also tracks and prints
  * the number of prefix expressions entered.
  * 
- * @version 1.0 / 19 Mar 2024
+ * @version 1.0 /  Mar 2024
  * @author David Blossom
  * 
  */
-
 public class RecursivePrefixToPostfixConverter {
 
+	/** main() validates the command line input and contains the program driver.   If an
+	 * incorrect number of arguments was entered, main() prints an error and prompts the
+	 * user for correct input. 
+	 * @param args  //input and output file names
+	 * @throws FileNotFoundException
+	 */
 	public static void main(String[] args) throws FileNotFoundException {
 		
 		//validate correct number of arguments was entered
@@ -34,6 +39,19 @@ public class RecursivePrefixToPostfixConverter {
 
 	} //end main
 	
+	/** processFiles() opens the input file, reads the input, prints the prefix string to the
+	 * output file, then opens the input file again to read the input, calls convert() for 
+	 * processing and prints the results to the output file.
+	 * @param inputFileName
+	 * @param outputFileName
+	 * @param fileIn
+	 * @param fileOut
+	 * @param outputStr
+	 * @param newInput
+	 * @param test
+	 * @param counter
+	 * @throws FileNotFoundException
+	 */
 	public void processFiles(String inputFileName, String outputFileName) throws FileNotFoundException {
 		
 		//create File object for input
@@ -80,7 +98,8 @@ public class RecursivePrefixToPostfixConverter {
 			
 			//process conversions from prefix to postfix; print to output file
 			while (scanner.hasNextLine()) {				
-
+				
+				error = "";
 				outputStr = convert(scanner);
 				
 				if (scanner.hasNext()) {
@@ -90,24 +109,18 @@ public class RecursivePrefixToPostfixConverter {
 					if (isOperand(test))
 						writer.printf( "%-30s\n", "Invalid prefix input; too many operands" );
 					
-					//if (isOperand(test) || isOperator(test))
-					else if (isOperator(test))
-						writer.printf( "%-30s\n", "Invalid prefix input; too many operators" );
-					
-					else 
+					else
 						writer.printf( "%-30s\n", outputStr );
-
+					
+					//flush remaining characters until newline
+					while (test != '\n')
+						test = scanner.next().charAt(0);
+					
 				} //end if
-												
-				//flush remaining characters until newline
-				while (test != '\n')
-					test = scanner.next().charAt(0);
 
 			} //end while
 			
-			writer.printf( "%-30s\n", outputStr );
-			
-			writer.print("\n\n\nExpressions evaluated: " + counter);
+			writer.print("\n\nExpressions evaluated: " + counter);
 			
 			writer.close();
 			scanner.close();
@@ -120,7 +133,11 @@ public class RecursivePrefixToPostfixConverter {
 		
 	} //end processFiles
 	
-	//get new character from file; uses recursion
+	/** getInput() accepts a Scanner object as a parameter and gets a single character from the
+	 * input file.
+	 * @param sc
+	 * @return newChar
+	 */
 	public char getInput(Scanner sc) {
 		
 		char newChar = ' ';
@@ -131,7 +148,16 @@ public class RecursivePrefixToPostfixConverter {
 		
 	} //end getInput
 	
-	//convert the prefix input to postfix using recursion
+	/** convert() accepts a Scanner object as a parameter, calls getInput() to get a new character,
+	 * evaluates the character, and returns a String.
+	 * @param sc
+	 * @param op
+	 * @param op1
+	 * @param op2
+	 * @param input
+	 * @return error
+	 * @return result
+	 */
 	public String convert(Scanner sc) {
 		
 		String op;
@@ -141,9 +167,15 @@ public class RecursivePrefixToPostfixConverter {
 		
 		char input = getInput(sc); //read in next character
 		
-		if (!isOperand(input) && !isOperator(input))
-			error = "error";
+		//check if character is whitespace
+		if (Character.isWhitespace(input))
+			error = "Invalid prefix input; too many operators";
 		
+		//check if character is valid
+		else if (!isOperand(input) && !isOperator(input))
+			error = "Invalid character in the prefix input";
+			
+			//begin recursive section
 			if(!isOperator(input))
 				return result = "" + input;
 			
@@ -160,9 +192,15 @@ public class RecursivePrefixToPostfixConverter {
 			
 			else
 				return result;
-				
+
 	} //end convert
 	
+	
+	/** isOperator is a boolean method that accepts a char and returns true or false dependent
+	 * on whether or not the char matches a set of defined operators.
+	 * @param c
+	 * @return true or false
+	 */
 	private static boolean isOperator(char c) {
 		
 		if (c == '+' || c == '-' || c == '*' || c == '/' || c == '$' || c == '^')
@@ -171,6 +209,11 @@ public class RecursivePrefixToPostfixConverter {
 			return false;
 	} //end isOperator
 	
+	/** isOperand is a boolean method that accepts a char and returns true or false dependent
+	 * on whether or not the char is a lower or upper case member of the Latin alphabet.
+	 * @param c
+	 * @return true or false
+	 */
 	private static boolean isOperand(char c) {
 		
 		if ( (c >= 'a' || c >= 'A') && (c <= 'z' || c<= 'Z') )
